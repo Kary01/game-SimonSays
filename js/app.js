@@ -4,11 +4,12 @@ const naranja = document.getElementById('naranja');
 const amarillo = document.getElementById('amarillo');
 const verde = document.getElementById('verde');
 const btnEmpezar = document.getElementById('btnEmpezar');
-const ULTIMO_NIVEL = 10;
+const ULTIMO_NIVEL = 5;
 
 // control de los elementos html
 class Juego {
     constructor(){ // se crea el constructor y ejecuta sus funciones
+        this.inicializar = this.inicializar.bind(this);
         this.inicializar();
         this.generarSecuencia();
         setTimeout(this.siguienteNivel, 500);
@@ -18,13 +19,22 @@ class Juego {
     inicializar(){
         this.elegirColor = this.elegirColor.bind(this); //podemos identificar cual botón ha sido presionado
         this.siguienteNivel = this.siguienteNivel.bind(this); //bind ayuda a que this pase a ser el juego y no window
-        btnEmpezar.classList.add('hide'); // oculta el botón de inicio
+        this.toggleBtnEmpezar();
         this.nivel = 1; // indica el nivel del juego
         this.colores = { // creamos objetos para tenr un mejor control de los elementos
             celeste, 
             naranja, 
             amarillo, 
             verde
+        };
+    };
+
+    //mostrar u ocultar el botón de inicio
+    toggleBtnEmpezar(){
+        if (btnEmpezar.classList.contains('hide')) { //condición si contiene la clase
+            btnEmpezar.classList.remove('hide'); // mostrar el botón de inicio
+        } else {
+            btnEmpezar.classList.add('hide'); // oculta el botón de inici
         };
     };
 
@@ -115,14 +125,27 @@ class Juego {
                 this.nivel++;  
                 this.eliminarEventosClick();
                 if(this.nivel === (ULTIMO_NIVEL + 1)){
-
+                    this.ganoElJuego();
                 } else {
                     setTimeout(this.siguienteNivel, 1500); //no se incova la función, solo se llama
                 };
             };
         }else {
-
+            this.perdioElJuego();
         };
+    };
+
+    ganoElJuego(){
+        swal("Good job!", "Felicidades! Ganaste el juego 👾", "success")
+        .then(this.inicializar);
+    };
+
+    perdioElJuego(){
+        swal("Upsi! 🤭", "Suerte para la próxima", "error")
+        .then(() => {
+            this.eliminarEventosClick();
+            this.inicializar;
+        });
     };
 
 };
