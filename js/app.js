@@ -4,20 +4,22 @@ const naranja = document.getElementById('naranja');
 const amarillo = document.getElementById('amarillo');
 const verde = document.getElementById('verde');
 const btnEmpezar = document.getElementById('btnEmpezar');
+const ULTIMO_NIVEL = 10;
 
 // control de los elementos html
 class Juego {
     constructor(){ // se crea el constructor y ejecuta sus funciones
         this.inicializar();
         this.generarSecuencia();
-        this.siguienteNivel();
+        setTimeout(this.siguienteNivel, 500);
     };
 
     // atributos básicos del juego
     inicializar(){
         this.elegirColor = this.elegirColor.bind(this); //podemos identificar cual botón ha sido presionado
+        this.siguienteNivel = this.siguienteNivel.bind(this); //bind ayuda a que this pase a ser el juego y no window
         btnEmpezar.classList.add('hide'); // oculta el botón de inicio
-        this.nivel = 4; // indica el nivel del juego
+        this.nivel = 1; // indica el nivel del juego
         this.colores = { // creamos objetos para tenr un mejor control de los elementos
             celeste, 
             naranja, 
@@ -28,16 +30,17 @@ class Juego {
 
     // secuencia con números aleatorios que representarán el color de cada botón
     generarSecuencia(){
-        this.secuencia = new Array(10).fill(0).map(n => Math.floor(Math.random()*4));
+        this.secuencia = new Array(ULTIMO_NIVEL).fill(0).map(n => Math.floor(Math.random()*4));
     };
 
     // cada que se pase al siguiente nivel, iluminará una secuencia
     siguienteNivel(){
+        this.subnivel = 0;
         this.iluminarSecuencia();
-        this.agregarEventoClick()
+        this.agregarEventoClick();
     }; 
 
-    //pasamos los número de la secuencia a colores
+    // pasamos los número de la secuencia a colores
     NumeroColor(numero){
         switch (numero) {
             case 0:
@@ -50,6 +53,21 @@ class Juego {
                 return 'verde';
         };
     };
+
+    // pasamos los colores de la secuancia a números 
+    ColorNumero(color){
+        switch (color) {
+            case 'celeste':
+                return 0;
+            case 'naranja':
+                return 1;
+            case 'amarillo':
+                return 2;
+            case 'verde':
+                return 3;
+        };
+    };
+    
 
     // la función recorrerá y transformará los números aleatorios a colores 
     iluminarSecuencia(){
@@ -67,7 +85,7 @@ class Juego {
 
     // vuelve a su color original después de cierto tiempo
     apagarColor(COLOR){
-        this.colores[COLOR].classList.remove('light')
+        this.colores[COLOR].classList.remove('light');
     }
 
     // selección de color al hacer click
@@ -78,9 +96,33 @@ class Juego {
         this.colores.verde.addEventListener('click', this.elegirColor);
     };
 
-    //
+    //verificando el color elegido
+    eliminarEventosClick(){
+        this.colores.celeste.removeEventListener('click', this.elegirColor);
+        this.colores.naranja.removeEventListener('click', this.elegirColor);
+        this.colores.amarillo.removeEventListener('click', this.elegirColor);
+        this.colores.verde.removeEventListener('click', this.elegirColor);
+    };
+
+    //condición para pasar de nivel
     elegirColor(ev){
-        console.log(this);
+        const NOMBRE_COLOR = ev.target.dataset.color;
+        const NUMERO_COLOR = this.ColorNumero(NOMBRE_COLOR);
+        this.iluminarColor(NOMBRE_COLOR);
+        if (NUMERO_COLOR === this.secuencia[this.subnivel]) {
+            this.subnivel++;
+            if (this.subnivel === this.nivel) {
+                this.nivel++;  
+                this.eliminarEventosClick();
+                if(this.nivel === (ULTIMO_NIVEL + 1)){
+
+                } else {
+                    setTimeout(this.siguienteNivel, 1500); //no se incova la función, solo se llama
+                };
+            };
+        }else {
+
+        };
     };
 
 };
