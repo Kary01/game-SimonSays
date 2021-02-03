@@ -1,4 +1,4 @@
-# Simon Say
+# Simon Says
 
 > Juego Simon Says (Simón Dice) como práctica de Javascript.
 
